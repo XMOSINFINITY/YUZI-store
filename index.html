@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YUZI STORE - Premium Top Up</title>
+<style>
+/* RESET & GLOBAL */
+* {margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body {background: radial-gradient(circle at top,#0a0a0a,#111111);color:#fff;}
+.container {max-width:480px;margin:auto;padding:20px;}
+
+/* HEADER */
+h1 {
+    text-align:center;
+    font-size:2em;
+    background: linear-gradient(90deg,#ffd700,#ff8c00,#0f0,#0ff);
+    -webkit-background-clip: text;
+    color:transparent;
+    animation: grad 6s ease infinite;
+    text-shadow:0 2px 10px rgba(255,255,255,0.1);
+}
+@keyframes grad {0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
+p.subtitle {text-align:center;color:#aaa;margin-bottom:20px;font-style:italic;}
+
+/* CARD (GLASS EFFECT) */
+.card {
+    background: rgba(30,30,30,0.7);
+    backdrop-filter: blur(10px);
+    padding:20px;
+    border-radius:20px;
+    margin-bottom:20px;
+    box-shadow:0 8px 25px rgba(0,0,0,0.7);
+    border:1px solid rgba(255,255,255,0.1);
+    transition: transform 0.3s;
+}
+.card:hover {transform: translateY(-5px);}
+
+/* FORM ELEMENTS */
+label {display:block;margin-top:10px;font-size:14px;color:#ddd;}
+input, select, button {
+    width:100%;padding:12px;margin-top:5px;border-radius:12px;border:none;outline:none;font-size:14px;
+}
+input, select {background:rgba(50,50,50,0.5);color:#fff;}
+button {
+    background: linear-gradient(45deg,#ffd700,#ff8c00);
+    color:#0a0a0a;font-weight:600;cursor:pointer;
+    box-shadow:0 4px 15px rgba(0,0,0,0.4);transition: all 0.3s;
+}
+button:hover {transform: scale(1.05);box-shadow:0 6px 20px rgba(0,0,0,0.6);}
+
+/* CART */
+.cart-item {
+    background: rgba(40,40,40,0.6);
+    padding:15px;
+    border-radius:15px;
+    margin-top:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.5);
+    display:flex;align-items:center;gap:15px;transition: transform 0.2s;
+}
+.cart-item:hover {transform: scale(1.02);}
+.cart-item img {width:80px;height:80px;object-fit:contain;border-radius:12px;border:1px solid rgba(255,255,255,0.2);}
+.cart-buttons {display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
+.small-btn {flex:1;padding:10px;font-size:13px;border-radius:10px;transition: all 0.3s;}
+.order-btn {background:linear-gradient(45deg,#00ff7f,#00cc5c);color:#0a0a0a;box-shadow:0 3px 10px rgba(0,255,127,0.5);}
+.order-btn:hover {transform:scale(1.05);box-shadow:0 5px 15px rgba(0,255,127,0.7);}
+.delete-btn {background:linear-gradient(45deg,#ff4c4c,#cc0000);color:#fff;box-shadow:0 3px 10px rgba(255,0,0,0.5);}
+.delete-btn:hover {transform:scale(1.05);box-shadow:0 5px 15px rgba(255,0,0,0.7);}
+
+/* NOTIF */
+#notif {
+    position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+    background:#00ff7f;color:#000;padding:12px 25px;border-radius:25px;font-weight:700;
+    opacity:0;pointer-events:none;transition:opacity 0.5s, transform 0.3s;
+}
+#notif.show {opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(-10px);}
+
+/* MODAL */
+.modal {display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+    background:rgba(0,0,0,0.85);justify-content:center;align-items:center;z-index:999;}
+.modal-content {
+    background: rgba(40,40,40,0.85);
+    padding:25px;
+    border-radius:20px;
+    width:90%;
+    max-width:400px;
+    animation: modalAnim 0.3s ease;
+    box-shadow:0 8px 25px rgba(0,0,0,0.8);
+}
+@keyframes modalAnim {0%{transform:scale(0.5);opacity:0;}100%{transform:scale(1);opacity:1;}}
+.modal h2 {color:#ffd700;text-align:center;margin-bottom:15px;}
+.modal button {background:linear-gradient(45deg,#00ff7f,#00cc5c);color:#0a0a0a;font-weight:bold;margin-top:10px;box-shadow:0 3px 15px rgba(0,255,127,0.5);}
+.modal button:hover {transform:scale(1.05);box-shadow:0 5px 20px rgba(0,255,127,0.7);}
+
+/* RESPONSIVE */
+@media(max-width:480px){.cart-buttons {flex-direction:column;}}
+.footer {text-align:center;color:#888;font-size:12px;margin-top:10px;}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>YUZI STORE</h1>
+<p class="subtitle">Top Up Game Murah & Cepat • Aman • Premium Experience</p>
+
+<div class="card">
+    <label>Nama Game</label>
+    <select id="game">
+        <option>Free Fire</option>
+        <option>Mobile Legends</option>
+        <option>PUBG Mobile</option>
+        <option>Call of Duty Mobile</option>
+        <option>Roblox</option>
+        <option>Clash of Clans</option>
+        <option>Super Sus</option>
+    </select>
+
+    <label>User ID / Server</label>
+    <input type="text" id="userid" placeholder="Masukkan ID">
+
+    <label>Nominal Top Up</label>
+    <select id="nominal">
+        <option value="10000">Rp 10.000</option>
+        <option value="20000">Rp 20.000</option>
+        <option value="50000">Rp 50.000</option>
+        <option value="100000">Rp 100.000</option>
+        <option value="200000">Rp 200.000</option>
+    </select>
+
+    <label>Diamond yang didapat: <span id="diamondPreview">0</span></label>
+
+    <label>Metode Pembayaran</label>
+    <select id="payment">
+        <option>DANA</option>
+        <option>OVO</option>
+        <option>GoPay</option>
+        <option>ShopeePay</option>
+        <option>QRIS</option>
+    </select>
+
+    <label>Bukti Transfer (Opsional, bisa upload nanti)</label>
+    <input type="file" id="bukti" accept="image/*">
+
+    <button onclick="openModalSingle()">Bayar Sekarang</button>
+    <button onclick="tambahKeranjang()">Tambah ke Keranjang</button>
+</div>
+
+<div class="card">
+    <h3>Keranjang Top Up</h3>
+    <div id="cart"></div>
+    <b>Total: <span id="total">Rp 0</span></b>
+    <button onclick="openModalAll()">Bayar & Order Semua</button>
+</div>
+
+<div class="footer">© 2025 YUZI STORE • Premium • Fast • Trusted • Secure</div>
+<div id="notif"></div>
+
+<div class="modal" id="modalBayar">
+    <div class="modal-content">
+        <h2>Bayar Sekarang</h2>
+        <p id="modalText"></p>
+        <button onclick="konfirmasiBayarSingle()">Konfirmasi Bayar</button>
+        <button style="background:#ff4c4c;color:#fff;" onclick="closeModal()">Batal</button>
+    </div>
+</div>
+
+<script>
+// ===== ANTI-DDOS PREMIUM INTEGRATION =====
+if(!sessionStorage.getItem("verified")){
+    alert("Anda harus verifikasi dulu sebelum masuk Store");
+    window.location.href="anti-ddos.html"; // arahkan ke halaman challenge
+}
+
+// ===== DIAMOND =====
+const diamondList = {
+    "Free Fire": {10000:100,20000:210,50000:550,100000:1200,200000:2500},
+    "Mobile Legends": {10000:100,20000:220,50000:560,100000:1150,200000:2400},
+    "PUBG Mobile": {10000:100,20000:210,50000:530,100000:1100,200000:2300},
+    "Call of Duty Mobile": {10000:100,20000:220,50000:550,100000:1150,200000:2400},
+    "Roblox": {10000:100,20000:210,50000:520,100000:1100,200000:2300},
+    "Clash of Clans": {10000:100,20000:210,50000:540,100000:1150,200000:2400},
+    "Super Sus": {10000:100,20000:210,50000:530,100000:1100,200000:2300}
+};
+let cart = [];
+
+function updateDiamond(){
+    const g = document.getElementById("game").value;
+    const n = parseInt(document.getElementById("nominal").value);
+    document.getElementById("diamondPreview").innerText = diamondList[g][n] || 0;
+}
+document.getElementById("game").addEventListener("change", updateDiamond);
+document.getElementById("nominal").addEventListener("change", updateDiamond);
+
+// ===== ADMIN NUMBERS =====
+const adminNumbers = { 
+    DANA: "6285147769300", 
+    OVO: "6285147769300", 
+    GoPay: "6285147769300", 
+    ShopeePay: "", 
+    QRIS: "" 
+};
+
+function showNotif(msg,isError=false){
+    const n = document.getElementById("notif");
+    n.innerText = msg;
+    n.style.background = isError?"#ff4c4c":"#00ff7f";
+    n.style.color = isError?"#fff":"#000";
+    n.classList.add("show");
+    setTimeout(()=>{n.classList.remove("show");},3000);
+}
+
+function validID(id){ return /^[a-zA-Z0-9]{3,20}$/.test(id); }
+
+function closeModal(){document.getElementById("modalBayar").style.display="none";}
+
+// ===== TAMBAH KE KERANJANG =====
+function tambahKeranjang(){
+    const g=document.getElementById("game").value;
+    const id=document.getElementById("userid").value.trim();
+    const n=parseInt(document.getElementById("nominal").value);
+    const p=document.getElementById("payment").value;
+    const f=document.getElementById("bukti").files[0];
+
+    if(!id){ showNotif("ID kosong!",true); return; }
+    if(!validID(id)){ showNotif("ID harus alfanumerik 3-20 karakter!",true); return; }
+
+    let buktiName = "";
+    let previewURL = "";
+    if(f){
+        if(!f.type.startsWith("image/")){ showNotif("File bukti harus gambar!",true); return; }
+        buktiName = f.name;
+        previewURL = URL.createObjectURL(f);
+    }
+
+    const d=diamondList[g][n];
+    cart.push({game:g,id:id,nominal:n,payment:p,buktiName:buktiName,buktiFile:f,diamond:d,previewURL:previewURL});
+    updateCart();
+
+    document.getElementById("userid").value="";
+    document.getElementById("bukti").value="";
+    updateDiamond();
+    showNotif("Item ditambahkan ke keranjang!");
+}
+
+function updateCart(){
+    const c=document.getElementById("cart");
+    c.innerHTML="";
+    let total=0;
+    cart.forEach((item,idx)=>{
+        total+=item.nominal;
+        const img=item.previewURL?`<img src="${item.previewURL}">`:"";
+        c.innerHTML+=`<div class="cart-item">
+            <div>${img}</div>
+            <div style="flex:1;">
+                <b>${idx+1}. ${item.game}</b> - ID: ${item.id}<br>
+                Nominal: Rp ${item.nominal.toLocaleString('id-ID')} - Diamond: ${item.diamond}<br>
+                Payment: ${item.payment} - Bukti: ${item.buktiName||"-"}<br>
+                <div class="cart-buttons">
+                    <button class="small-btn order-btn" onclick="orderItem(${idx})">Order Sekarang</button>
+                    <button class="small-btn delete-btn" onclick="hapusItem(${idx})">Hapus</button>
+                </div>
+            </div>
+        </div>`;
+    });
+    document.getElementById("total").innerText="Rp "+total.toLocaleString('id-ID');
+}
+
+function hapusItem(idx){
+    if(!confirm("Hapus item ini?")) return;
+    const it=cart[idx];
+    if(it.previewURL) URL.revokeObjectURL(it.previewURL);
+    cart.splice(idx,1);
+    updateCart();
+}
+
+// ===== ORDER ITEM TUNGGAL =====
+function orderItem(idx){
+    const it=cart[idx];
+    if(!confirm("Order item ini ke WhatsApp?")) return;
+    const admin = adminNumbers[it.payment]||"";
+    const msg=`TOP UP GAME\n\nGame: ${it.game}\nID: ${it.id}\nNominal: Rp ${it.nominal.toLocaleString('id-ID')}\nDiamond: ${it.diamond}\nPayment: ${it.payment}\nAdmin: ${admin||"-"}\nBukti: ${it.buktiName||"-"}`;
+    window.open(`https://wa.me/6285147769300?text=${encodeURIComponent(msg)}`,"_blank");
+    if(it.previewURL) URL.revokeObjectURL(it.previewURL);
+    cart.splice(idx,1);
+    updateCart();
+    showNotif("Item dikirim ke WhatsApp!");
+}
+
+// ===== BAYAR & ORDER SEMUA =====
+function openModalAll(){
+    if(cart.length===0){ showNotif("Keranjang kosong!",true); return; }
+    const totalNominal = cart.reduce((a,b)=>a+b.nominal,0);
+    const payment = cart[0].payment;
+    const admin = adminNumbers[payment]||"";
+    document.getElementById("modalText").innerText = `Silakan transfer total Rp ${totalNominal.toLocaleString('id-ID')} ke ${payment}${admin?" Admin: "+admin:""}`;
+
+    const modal = document.getElementById("modalBayar");
+    const btn = modal.querySelector("button:first-of-type");
+    btn.onclick = function(){
+        let msg="TOP UP GAME\n\n";
+        cart.forEach((it,idx)=>{
+            const adminIt = adminNumbers[it.payment]||"-";
+            msg+=`${idx+1}. Game: ${it.game}\nID: ${it.id}\nNominal: Rp ${it.nominal.toLocaleString('id-ID')}\nDiamond: ${it.diamond}\nPayment: ${it.payment}\nAdmin: ${adminIt}\nBukti: ${it.buktiName||"-"}\n\n`;
+            if(it.previewURL) URL.revokeObjectURL(it.previewURL);
+        });
+        window.open(`https://wa.me/6285147769300?text=${encodeURIComponent(msg)}`,"_blank");
+        cart=[];
+        updateCart();
+        closeModal();
+        showNotif("Semua order dikirim ke WhatsApp!");
+    };
+
+    modal.style.display = "flex";
+}
+
+// ===== BAYAR ITEM TUNGGAL =====
+function openModalSingle(){
+    const g = document.getElementById("game").value;
+    const n = parseInt(document.getElementById("nominal").value);
+    const p = document.getElementById("payment").value;
+    const a = adminNumbers[p]||"";
+    document.getElementById("modalText").innerText = `Silakan transfer Rp ${n.toLocaleString('id-ID')} ke ${p}${a?" Admin: "+a:""}`;
+
+    const modal = document.getElementById("modalBayar");
+    const btn = modal.querySelector("button:first-of-type");
+    btn.onclick = konfirmasiBayarSingle;
+    modal.style.display = "flex";
+}
+
+function konfirmasiBayarSingle(){
+    closeModal();
+    showNotif("Pembayaran dicatat. Sekarang bisa order!");
+}
+
+updateDiamond();
+</script>
+</body>
+</html>
