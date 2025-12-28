@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Panel Bot All-in-One</title>
+<style>
+body { font-family: Arial; background:#1e1e1e; color:#fff; text-align:center; padding:30px; }
+button { padding:12px 25px; margin:10px; border:none; border-radius:6px; font-size:16px; cursor:pointer; }
+.start { background:#ff9100; color:black; }
+.stop { background:#d50000; color:white; }
+input { padding:10px; margin:5px; border-radius:5px; border:none; }
+#login { margin-bottom:20px; }
+#bot-list { margin-top:20px; }
+</style>
+</head>
+<body>
+
+<h1>🤖 PANEL BOT ALL-IN-ONE</h1>
+
+<div id="login">
+<input type="text" id="user" placeholder="Username"><br>
+<input type="password" id="pass" placeholder="Password"><br>
+<button onclick="login()">Login</button>
+</div>
+
+<div id="panel" style="display:none;">
+<h3>Status Bot:</h3>
+<pre id="status"></pre>
+
+<h3>Kontrol Bot:</h3>
+<input type="text" id="botname" placeholder="Nama Bot (file.js)">
+<button class="start" onclick="startBot()">Start</button>
+<button class="stop" onclick="stopBot()">Stop</button>
+
+<h3>Upload Bot:</h3>
+<input type="file" id="botfile">
+<button onclick="uploadBot()">Upload</button>
+</div>
+
+<script>
+async function login(){
+    const user = document.getElementById("user").value;
+    const pass = document.getElementById("pass").value;
+    const res = await fetch("/login", {
+        method:"POST",
+        headers: { "Content-Type":"application/json" },
+        body: JSON.stringify({ user, pass })
+    });
+    const data = await res.json();
+    if(data.success){
+        alert("Login berhasil!");
+        document.getElementById("login").style.display="none";
+        document.getElementById("panel").style.display="block";
+        cekStatus();
+    } else alert("Login gagal!");
+}
+
+async function startBot(){
+    const bot = document.getElementById("botname").value;
+    const res = await fetch("/start", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({bot}) });
+    const data = await res.json();
+    alert(data.status);
+    cekStatus();
+}
+
+async function stopBot(){
+    const bot = document.getElementById("botname").value;
+    const res = await fetch("/stop", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({bot}) });
+    const data = await res.json();
+    alert(data.status);
+    cekStatus();
+}
+
+async function cekStatus(){
+    const res = await fetch("/status");
+    const data = await res.json();
+    document.getElementById("status").innerText = JSON.stringify(data, null, 2);
+}
+
+async function uploadBot(){
+    const file = document.getElementById("botfile").files[0];
+    if(!file) return alert("Pilih file bot!");
+    const form = new FormData();
+    form.append("botfile", file);
+    const res = await fetch("/upload", { method:"POST", body: form });
+    const data = await res.json();
+    alert(data.status);
+    cekStatus();
+}
+
+setInterval(cekStatus, 5000);
+</script>
+
+</body>
+</html>
