@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YUZI STORE - Secure Access</title>
+
+<style>
+body{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    background:radial-gradient(circle at top,#0a0a0a,#111);
+    color:#fff;
+    font-family:'Poppins',sans-serif;
+    flex-direction:column;
+    text-align:center;
+    overflow:hidden;
+}
+h1{
+    font-size:3em;
+    background:linear-gradient(90deg,#ffd700,#ff8c00,#00ff7f,#00ffff);
+    -webkit-background-clip:text;
+    color:transparent;
+    text-shadow:0 2px 15px rgba(255,255,255,0.2);
+    animation:grad 6s ease infinite;
+}
+@keyframes grad{
+    0%{background-position:0%}
+    50%{background-position:100%}
+    100%{background-position:0%}
+}
+p{
+    color:#aaa;
+    margin-top:15px;
+    font-size:1.1em;
+}
+</style>
+</head>
+
+<body>
+
+<h1>YUZI STORE</h1>
+<p>Memeriksa keamanan akses...</p>
+
+<script>
+/* =======================
+   ANTI-DDOS CLIENT-SIDE
+   ======================= */
+const LIMIT = 3;       // Maks refresh dalam INTERVAL
+const INTERVAL = 10000; // 10 detik
+
+const now = Date.now();
+let access = JSON.parse(localStorage.getItem("yuzi_access") || "[]");
+
+// Hapus timestamp lama
+access = access.filter(t => now - t < INTERVAL);
+access.push(now);
+localStorage.setItem("yuzi_access", JSON.stringify(access));
+
+// Block jika spam reload
+if(access.length > LIMIT){
+    document.body.innerHTML = `
+        <h1 style="color:red">⚠ Akses Diblokir</h1>
+        <p>Terlalu banyak permintaan.<br>Silakan tunggu beberapa saat.</p>
+    `;
+    throw new Error("Blocked: Too many requests");
+}
+
+/* =======================
+   BOT / AUTOMATION DETECT
+   ======================= */
+if(navigator.webdriver){
+    document.body.innerHTML = `
+        <h1 style="color:red">⚠ Akses Ditolak</h1>
+        <p>Aktivitas mencurigakan terdeteksi</p>
+    `;
+    throw new Error("Blocked: Automation detected");
+}
+
+/* =======================
+   SAFE REDIRECT
+   ======================= */
+setTimeout(()=>{
+    window.location.replace("index.html");
+},1200);
+</script>
+
+</body>
+</html>
